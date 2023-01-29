@@ -1,10 +1,14 @@
-import NetflixLogo from '../../assets/images/logo.png'
-import {MdSearch} from 'react-icons/md'
-import styled from 'styled-components'
+import NetflixLogo from '../../assets/images/logo.png';
+import { MdSearch } from 'react-icons/md';
+import styled from 'styled-components';
+// import { useEffect, useState } from 'react';
+import { useScrollY } from '../hooks';
 
 function Navbar(props) {
+    const [scrollY] = useScrollY();
+
     return (
-        <Navigation>
+        <Navigation style={scrollY < 50 ? {backgroundColor: 'transparent'} : {backgroundColor: 'var(--color-background)'}}>
             <div className='navContainer'>
                 <div className='logo'>
                     <img src={NetflixLogo} alt="" />
@@ -22,17 +26,18 @@ export default Navbar;
 const Navigation = styled.div`
     width: 100%;
     height: 80px;
-    positon: fixed;
+    position: fixed;
     top: 0;
     transition-timing-function: ease-in;
     transition: all 1s;
+    z-index: 10;
 
     @media only screen and (max-width: 600px) {
         height: 100px;
     }
 
     .navContainer {
-        background-color: var(--color-background);
+        background-color: transparent;
         display: flex;
         align-items: center;
         flex-direction: row;
@@ -55,7 +60,7 @@ const Navigation = styled.div`
             color: var(--color-white);
             padding-right: 20px;
             display: flex;
-            justtify-content: flex-end;
+            justify-content: flex-end;
 
             &:hover .iconSearch {
                 color: var(--color-white);
