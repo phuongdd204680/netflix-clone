@@ -1,5 +1,7 @@
 import styled from "styled-components";
 import {FiChevronLeft, FiChevronRight} from 'react-icons/fi';
+import { useEffect, useRef, useState } from "react";
+import { SmoothHorizontalScrolling } from '../../utils';
 
 const movies = [
     "https://vnw-img-cdn.popsww.com/api/v2/containers/file2/cms_topic/op_t_p_m_i_xem_ngay-1a1e3e59a6ad-1667555559385-o6LY52Wb.png?v=0&maxW=260&format=webp",
@@ -16,23 +18,72 @@ const movies = [
 ];
 
 function Contents (props) {
+    const sliderRef = useRef();
+    const movieRef = useRef();
+    const [dragDown, setDragDown] = useState(0);
+    const [dragMove, setDragMove] = useState(0);
+    const [isDrag, setIsDrag] = useState(false);
+
+
+    const handleScrollRight = () => {
+        const maxScrollLeft = sliderRef.current.scrollWidth - sliderRef.current.clientWidth;
+        if(sliderRef.current.scrollLeft < maxScrollLeft) {
+            SmoothHorizontalScrolling(sliderRef.current, 
+                250, 
+                movieRef.current.clientWidth * 2, 
+                sliderRef.current.scrollLeft)
+        };
+    }
+    const handleScrollLeft = () => {
+        if(sliderRef.current.scrollLeft > 0) {
+            SmoothHorizontalScrolling(sliderRef.current, 
+                250, 
+                - movieRef.current.clientWidth * 2, 
+                sliderRef.current.scrollLeft)
+        };
+    }
+
+    useEffect(() => {
+        if(isDrag) {
+            if(dragMove < dragDown) handleScrollRight();
+            if(dragMove > dragDown) handleScrollLeft();
+        }
+    }, [dragDown, dragMove, isDrag])
+
+    const onDragStart = e => {
+        setIsDrag(true);
+        setDragDown(e.screenX);
+    }
+
+    const onDragEnd = e => {
+        setIsDrag(false);
+    }
+
+    const onDragEnter = e => {
+        setDragMove(e.screenX);
+    }
+
     return (
-        <MoviesRowContainer>
+        <MoviesRowContainer draggable="false">
             <h1 className="heading">Netflix Originals</h1>
-            <MoviesSlider>
-                {
-                    movies.map((movie, index) => (
-                    <div key={index} className="movieItem">
-                        <img src={movie} alt="" />
+            <MoviesSlider 
+                ref={sliderRef} 
+                draggable="true"
+                onDragStart={onDragStart}
+                onDragEnd={onDragEnd}
+                onDragEnter={onDragEnter}
+            >
+                {movies.map((movie, index) => (
+                    <div key={index} className="movieItem" ref={movieRef} draggable="false">
+                        <img src={movie} alt="" draggable="false"/>
                         <div className="movieName">Movie Name</div>
                     </div>
-                    ))
-                }
+                    ))}
             </MoviesSlider>
-            <div className="btnLeft">
+            <div className="btnLeft" onClick={handleScrollLeft}>
                 <FiChevronLeft />
             </div>
-            <div className="btnRight">
+            <div className="btnRight" onClick={handleScrollRight}>
                 <FiChevronRight />
             </div>
         </MoviesRowContainer>
@@ -66,7 +117,7 @@ const  MoviesRowContainer = styled.div`
         border-radius: 4px;
         display: flex;
         align-items: center;
-        transform: translateY(-50%); // transform: translateY(-30%); 
+        transform: translateY(-30%); 
         &:hover {
             background-color: rgba(0, 0, 0, 0.8);
         }
@@ -94,7 +145,7 @@ const  MoviesRowContainer = styled.div`
         border-radius: 4px;
         display: flex;
         align-items: center;
-        transform: translateY(-50%); // transform: translateY(-30%); 
+        transform: translateY(-30%); 
         &:hover {
             background-color: rgba(0, 0, 0, 0.8);
         }
@@ -113,15 +164,29 @@ const  MoviesRowContainer = styled.div`
 const MoviesSlider = styled.div`
     display: grid;
     gap: 6px;
-    grid-template-columns: repeat(${movies.length}, 300px);
+    grid-template-columns: repeat(${movies.length}, 300px); //grid-template-columns: repeat(${movies.length}, 360px); fix
     transition: all 0.3s linear;
     user-select: none;
     overflow-y: hidden;
-    overflow: auto;
+    overflow-x: auto;
     overflow: hidden;
     padding-top: 28px;
     padding-bottom: 28px;
     scroll-behavior: smooth;
+
+
+
+    @media screen and (max-width: 1200px) {
+        grid-template-columns: repeat(${movies.length}, 250px) // 300px fix
+    }
+
+    @media screen and (max-width: 992px) {
+        grid-template-columns: repeat(${movies.length}, 200px) // 250px fix
+    }
+
+    @media screen and (max-width: 768px) {
+        grid-template-columns: repeat(${movies.length}, 150px) // 200px fix
+    }
 
     &:hover .movieItem {
         opacity: 0.5;
@@ -131,7 +196,7 @@ const MoviesSlider = styled.div`
         transform scale(1);
         max-width: 400px;
         max-height: 500px;
-        width: 88%; // width: 100%;
+        width: 88%; // width: 100%; fix
         height: 100%;
         transition: all 0.3s linear;
         user-select: none;
@@ -147,8 +212,8 @@ const MoviesSlider = styled.div`
         }
 
         img {
-            with: 100%;
-            height: 100%;
+            width: 100%;
+            height: 100%; 
             object-fit: cover;
         }
 

@@ -69,7 +69,7 @@ const IntroContainer = styled.div`
         }
 
         @media screen and (max-width: 600px) {
-            top: 110px; 
+            top: 100px; 
             left: 15px;
         }
 
