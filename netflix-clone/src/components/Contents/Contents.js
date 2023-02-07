@@ -1,5 +1,7 @@
-import React from "react";
+import React, { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import MoviesRow from "./MoviesRow";
+import { getNetflixOriginals } from "../store/actions"
 
 const movies = [
     "https://vnw-img-cdn.popsww.com/api/v2/containers/file2/cms_topic/op_t_p_m_i_xem_ngay-1a1e3e59a6ad-1667555559385-o6LY52Wb.png?v=0&maxW=260&format=webp",
@@ -16,9 +18,18 @@ const movies = [
 ]
 
 function Contents(props) {
+    const dispatch = useDispatch();
+    const { NetflixOriginals } = useSelector(state => state.infoMovies);
+    
+    useEffect(() => {
+        dispatch(getNetflixOriginals());
+    }, [dispatch])
+
+    console.log(NetflixOriginals);
+
     return (
         <div>
-            <MoviesRow movies={movies} title="Netflix Originals" isNetflix={true}/>
+            <MoviesRow movies={NetflixOriginals} title="Netflix Originals" isNetflix={true}/>
             <MoviesRow movies={movies} title="Trending Movies"/>
             <MoviesRow movies={movies} title="Top Rated Movies"/>
             <MoviesRow movies={movies} title="Action Movies"/>

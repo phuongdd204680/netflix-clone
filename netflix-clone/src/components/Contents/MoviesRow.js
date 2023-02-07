@@ -4,20 +4,6 @@ import { useEffect, useRef, useState } from "react";
 import { SmoothHorizontalScrolling } from '../../utils';
 import { useViewport } from "../hooks";
 
-// const movies = [
-//     "https://vnw-img-cdn.popsww.com/api/v2/containers/file2/cms_topic/op_t_p_m_i_xem_ngay-1a1e3e59a6ad-1667555559385-o6LY52Wb.png?v=0&maxW=260&format=webp",
-//     "https://vnw-img-cdn.popsww.com/api/v2/containers/file2/cms_topic/naruto_shippuden-91164845f933-1669280136982-ok2DcxZa.png?v=0&maxW=260&format=webp",
-//     "https://vnw-img-cdn.popsww.com/api/v2/containers/file2/cms_topic/vertical_poster_revised-8aa987cbb35e-1665398555193-4KHCstN6.jpg?v=0&maxW=260&format=webp",
-//     "https://vnw-img-cdn.popsww.com/api/v2/containers/file2/cms_topic/vertical_poster-41caa2d58074-1673596993014-atXjGWZD.jpg?v=0&maxW=260&format=webp",
-//     "https://vnw-img-cdn.popsww.com/api/v2/containers/file2/cms_topic/vertical_poster-2a780db5f359-1665398691229-mROlK0Ue.jpg?v=0&maxW=260&format=webp",
-//     "https://vnw-img-cdn.popsww.com/api/v2/containers/file2/cms_topic/doraemon_t_p_m_i_xem_ngay-1152f671c7e3-1667616000071-RwrJYn8Z.png?v=0&maxW=260&format=webp",
-//     "https://vnw-img-cdn.popsww.com/api/v2/containers/file2/cms_topic/vertical_poster-d87f9c73eae6-1654076410828-by4TNV1a.png?v=0&maxW=260&format=webp",
-//     "https://vnw-img-cdn.popsww.com/api/v2/containers/file2/cms_topic/vertical_poster-2ca42178218e-1673596834117-vBrhWd9u.png?v=0&maxW=260&format=webp",
-//     "https://vnw-img-cdn.popsww.com/api/v2/containers/file2/cms_topic/vertical_poster-2c497db02b65-1668137015798-fk5ixUJS.png?v=0&maxW=260&format=webp",
-//     "https://vnw-img-cdn.popsww.com/api/v2/containers/file2/cms_topic/vertical_poster-71c7e6974e57-1631519882314-ioJtMRJW.png?v=0&maxW=260&format=webp",
-//     "https://vnw-img-cdn.popsww.com/api/v2/containers/file2/cms_thumbnails/poster_d_c_640x960-a464828705fe-1588909881743-ofBGrnKr.png?v=0&maxW=260&format=webp",
-// ];
-
 function MoviesRow (props) {
     const {movies, title, isNetflix} = props;
     const sliderRef = useRef();
@@ -86,12 +72,18 @@ function MoviesRow (props) {
                         }   : {}
                 }
             >
-                {movies.map((movie, index) => (
-                    <div key={index} className="movieItem" ref={movieRef} draggable="false">
-                        <img src={movie} alt="" draggable="false"/>
-                        <div className="movieName">Movie Name</div>
-                    </div>
-                    ))}
+                {movies && movies.length > 0 && movies.map((movie, index) => {
+                    if(movie.poster_path && movie.backdrop_path !== null) {
+                        let imageUrl = isNetflix
+                            ? `https://image.tmdb.org/t/p/original/${movie.poster_path}`
+                            : `https://image.tmdb.org/t/p/w500/${movie.backdrop_path}`
+                        return (
+                            <div key={index} className="movieItem" ref={movieRef} draggable="false">
+                                <img src={imageUrl} alt="" draggable="false"/>
+                                <div className="movieName">{movie.title || movie.name}</div>
+                            </div>
+                            )}
+                })}
             </MoviesSlider>
             <div className={`btnLeft ${isNetflix && 'isNetflix'}`} onClick={handleScrollLeft}>
                 <FiChevronLeft />
