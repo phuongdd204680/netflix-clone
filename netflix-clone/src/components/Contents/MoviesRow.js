@@ -195,7 +195,7 @@ const MoviesSlider = styled.div`
         transform scale(1);
         max-width: 400px;
         max-height: 500px;
-        width: 88%; // width: 100%; fix
+        width: 100%; 
         height: 100%;
         transition: all 0.3s linear;
         user-select: none;
